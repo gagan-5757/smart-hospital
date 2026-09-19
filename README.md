@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏥 NexusCare — Smart Hospital Resource Coordination
 
-## Getting Started
+> **A real-time command center for coordinating critical hospital resources across a connected healthcare network.**
 
-First, run the development server:
+<p align="center">
+  <img src="https://img.shields.io/badge/Status-Hackathon%20MVP-00d4ff?style=for-the-badge" />
+  <img src="https://img.shields.io/badge/Next.js-16-black?style=for-the-badge&logo=next.js" />
+  <img src="https://img.shields.io/badge/Node.js-Express-339933?style=for-the-badge&logo=node.js" />
+  <img src="https://img.shields.io/badge/PostgreSQL-Prisma-4169E1?style=for-the-badge&logo=postgresql" />
+  <img src="https://img.shields.io/badge/Real--Time-Socket.io-010101?style=for-the-badge&logo=socket.io" />
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+---
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## 🚨 The Problem
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+During high-demand situations, hospitals may have resources available in one branch while another branch is experiencing a critical shortage.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+A coordinator shouldn't have to call multiple hospitals to answer:
 
-## Learn More
+> **"Where is the nearest available resource right now?"**
 
-To learn more about Next.js, take a look at the following resources:
+### NexusCare solves this with a unified real-time coordination platform.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Instead of fragmented resource information, coordinators get a single operational view of:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- 🛏️ Bed availability
+- 🚑 Emergency capacity
+- 🩸 Blood inventory
+- 🫁 Critical equipment
+- 🔄 Inter-hospital transfer requests
+- 🤖 Predicted resource shortages
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+# ⚡ The Core Idea
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```text
+       HOSPITAL A
+       Critical Need
+            │
+            ▼
+   ┌──────────────────┐
+   │  AI CAPACITY     │
+   │    ALERT         │
+   └────────┬─────────┘
+            │
+            ▼
+   ┌──────────────────┐
+   │   SMART MATCH    │
+   │                  │
+   │ Find surplus     │
+   │ hospital         │
+   └────────┬─────────┘
+            │
+            ▼
+   ┌──────────────────┐
+   │ TRANSFER REQUEST │
+   └────────┬─────────┘
+            │
+       Accept / Reject
+            │
+            ▼
+   ┌──────────────────┐
+   │ REAL-TIME UPDATE │
+   └────────┬─────────┘
+            │
+            ▼
+   ┌──────────────────┐
+   │   AUDIT TRAIL    │
+   └──────────────────┘
