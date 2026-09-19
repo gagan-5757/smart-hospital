@@ -1,69 +1,125 @@
-import Image from "next/image";
+import {
+  Activity,
+  AlertTriangle,
+  Bed,
+  Droplets,
+  Hospital,
+} from "lucide-react";
 
 export default function Home() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
+    <main className="min-h-screen bg-slate-950 text-white">
+      {/* Header */}
+      <header className="border-b border-slate-800 bg-slate-900 px-6 py-5">
+        <div className="flex items-center gap-3">
+          <div className="rounded-xl bg-cyan-500/10 p-3 text-cyan-400">
+            <Hospital size={26} />
+          </div>
+
+          <div>
+            <h1 className="text-xl font-bold">
+              Smart Hospital Command Center
+            </h1>
+            <p className="text-sm text-slate-400">
+              Real-time hospital resource coordination
+            </p>
+          </div>
+        </div>
+      </header>
+
+      {/* Main */}
+      <section className="p-6">
+        <div className="mb-8">
+          <p className="text-sm font-medium text-cyan-400">
+            HEALTHCARE OPERATIONS
+          </p>
+
+          <h2 className="mt-2 text-3xl font-bold">
+            Network Resource Overview
+          </h2>
+
+          <p className="mt-2 text-slate-400">
+            Monitor critical resources across connected hospital branches.
           </p>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+
+        {/* Summary cards */}
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-4">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+            <Bed className="text-cyan-400" size={24} />
+            <p className="mt-4 text-sm text-slate-400">Available Beds</p>
+            <h3 className="mt-1 text-3xl font-bold">124</h3>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+            <Droplets className="text-red-400" size={24} />
+            <p className="mt-4 text-sm text-slate-400">Blood Units</p>
+            <h3 className="mt-1 text-3xl font-bold">87</h3>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-5">
+            <Activity className="text-emerald-400" size={24} />
+            <p className="mt-4 text-sm text-slate-400">
+              Emergency Capacity
+            </p>
+            <h3 className="mt-1 text-3xl font-bold">72%</h3>
+          </div>
+
+          <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-5">
+            <AlertTriangle className="text-red-400" size={24} />
+            <p className="mt-4 text-sm text-slate-400">Critical Alerts</p>
+            <h3 className="mt-1 text-3xl font-bold text-red-400">3</h3>
+          </div>
         </div>
-      </main>
-    </div>
+
+        {/* Coming modules */}
+        <div className="mt-8 grid gap-5 lg:grid-cols-2">
+          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h3 className="text-lg font-semibold">AI Capacity Prediction</h3>
+
+            <p className="mt-2 text-sm text-slate-400">
+              Predict upcoming resource shortages using recent demand and
+              resource burn rate.
+            </p>
+
+            <div className="mt-5 rounded-xl border border-red-500/20 bg-red-500/5 p-4">
+              <p className="text-sm font-semibold text-red-400">
+                ICU capacity warning
+              </p>
+
+              <p className="mt-1 text-xs text-slate-400">
+                Bengaluru Central — current utilization 92%
+              </p>
+            </div>
+          </div>
+
+          <div className="rounded-2xl border border-slate-800 bg-slate-900 p-6">
+            <h3 className="text-lg font-semibold">
+              Emergency Resource Requests
+            </h3>
+
+            <p className="mt-2 text-sm text-slate-400">
+              Coordinate critical resource requests between hospital
+              branches.
+            </p>
+
+            <div className="mt-5 rounded-xl border border-slate-800 bg-slate-950 p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="font-medium">O− Blood</p>
+                  <p className="text-xs text-slate-500">
+                    Bengaluru Central
+                  </p>
+                </div>
+
+                <span className="rounded-full bg-red-500/10 px-3 py-1 text-xs font-semibold text-red-400">
+                  5 Units
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
   );
 }
