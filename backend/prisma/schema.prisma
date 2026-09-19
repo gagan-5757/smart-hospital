@@ -1,0 +1,318 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/* =========================================================
+   ENUMS
+   ========================================================= */
+
+enum UserRole {
+  ADMIN
+  COORDINATOR
+}
+
+enum ResourceType {
+  BED
+  BLOOD
+  EQUIPMENT
+}
+
+enum ResourceStatus {
+  AVAILABLE
+  LOW
+  CRITICAL
+  UNAVAILABLE
+}
+
+enum BloodGroup {
+  A_POSITIVE
+  A_NEGATIVE
+  B_POSITIVE
+  B_NEGATIVE
+  AB_POSITIVE
+  AB_NEGATIVE
+  O_POSITIVE
+  O_NEGATIVE
+}
+
+enum RequestStatus {
+  PENDING
+  MATCHED
+  ACCEPTED
+  REJECTED
+  COMPLETED
+  CANCELLED
+}
+
+enum Urgency {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum NotificationSeverity {
+  INFO
+  WARNING
+  CRITICAL
+}
+
+/* =========================================================
+   HOSPITAL
+   ========================================================= */
+
+model Hospital {
+  id           String   @id @default(cuid())
+  name         String
+  code         String   @unique
+  city         String
+  address      String
+  latitude     Float?
+  longitude    Float?
+  contactName  String?
+  contactPhone String?
+  isActive     Boolean  @default(true)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  departments Department[]
+  users       User[]
+  resources   Resource[]
+
+  requestedRequests Request[] @relation("RequestDestination")
+  supplyingRequests Request[] @relation("RequestSource")
+
+  auditLogs    AuditLog[]
+  notifications Notification[]
+
+  @@index([city])
+  @@index([isActive])
+}
+
+/* =========================================================
+   DEPARTMENT
+   ========================================================= */
+
+model Department {
+  id         String   @id @default(cuid())
+  name       String
+  code       String
+  hospitalId String
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  hospital   Hospital   @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  users      User[]
+  resources  Resource[]
+
+  @@unique([hospitalId, code])
+  @@index([hospitalId])
+}
+
+/* =========================================================
+   USER
+   ========================================================= */
+
+model User {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  role         UserRole @default(COORDINATOR)
+
+  hospitalId   String
+  departmentId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  hospital   Hospital    @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  department Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+
+  createdRequests Request[]
+  auditLogs       AuditLog[]
+  notifications   Notification[]
+  resourceHistories ResourceHistory[]
+
+  @@index([hospitalId])
+  @@index([departmentId])
+  @@index([role])
+}
+
+/* =========================================================
+   RESOURCE
+   ========================================================= */
+
+model Resource {
+  id           String         @id @default(cuid())
+  name         String
+  type         ResourceType
+  bloodGroup   BloodGroup?
+  unit         String
+
+  totalQuantity     Int
+  availableQuantity Int
+  reservedQuantity  Int @default(0)
+
+  criticalThreshold Int
+
+  status ResourceStatus @default(AVAILABLE)
+
+  hospitalId   String
+  departmentId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  hospital   Hospital    @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+  department Department? @relation(fields: [departmentId], references: [id], onDelete: SetNull)
+
+  history ResourceHistory[]
+
+  @@index([hospitalId])
+  @@index([departmentId])
+  @@index([type])
+  @@index([bloodGroup])
+  @@index([status])
+}
+
+/* =========================================================
+   RESOURCE HISTORY
+   ========================================================= */
+
+model ResourceHistory {
+  id String @id @default(cuid())
+
+  resourceId String
+  changedById String?
+
+  action String
+
+  quantityBefore Int
+  quantityAfter  Int
+
+  note String?
+
+  createdAt DateTime @default(now())
+
+  resource  Resource @relation(fields: [resourceId], references: [id], onDelete: Cascade)
+changedBy User?   @relation(fields: [changedById], references: [id], onDelete: SetNull)
+
+  @@index([resourceId])
+  @@index([changedById])
+  @@index([createdAt])
+}
+
+/* =========================================================
+   EMERGENCY REQUEST
+   ========================================================= */
+
+model Request {
+  id String @id @default(cuid())
+
+  resourceType ResourceType
+  bloodGroup   BloodGroup?
+
+  quantity Int
+  urgency  Urgency @default(MEDIUM)
+  status   RequestStatus @default(PENDING)
+
+  description String?
+
+  /* Hospital requesting the resource */
+  destinationHospitalId String
+
+  /* Hospital identified as the supplier */
+  sourceHospitalId String?
+
+  createdById String
+
+  /* Smart Match information */
+  smartMatchScore Float?
+  distanceKm      Float?
+
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  respondedAt DateTime?
+
+  destinationHospital Hospital @relation("RequestDestination", fields: [destinationHospitalId], references: [id])
+
+sourceHospital Hospital? @relation("RequestSource", fields: [sourceHospitalId], references: [id])
+
+createdBy User @relation(fields: [createdById], references: [id])
+
+  @@index([destinationHospitalId])
+  @@index([sourceHospitalId])
+  @@index([createdById])
+  @@index([status])
+  @@index([urgency])
+  @@index([createdAt])
+}
+
+/* =========================================================
+   AUDIT LOG
+   ========================================================= */
+
+model AuditLog {
+  id String @id @default(cuid())
+
+  hospitalId String?
+  userId     String?
+
+  action     String
+  entityType String
+  entityId   String?
+
+  details Json?
+
+  quantityBefore Int?
+  quantityAfter  Int?
+
+  createdAt DateTime @default(now())
+
+  hospital Hospital? @relation(fields: [hospitalId], references: [id], onDelete: SetNull)
+
+user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([hospitalId])
+  @@index([userId])
+  @@index([entityType])
+  @@index([entityId])
+  @@index([createdAt])
+}
+
+/* =========================================================
+   NOTIFICATION
+   ========================================================= */
+
+model Notification {
+  id String @id @default(cuid())
+
+  hospitalId String
+  userId     String?
+
+  title   String
+  message String
+
+  severity NotificationSeverity @default(INFO)
+
+  isRead Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+ hospital Hospital @relation(fields: [hospitalId], references: [id], onDelete: Cascade)
+
+user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([hospitalId])
+  @@index([userId])
+  @@index([severity])
+  @@index([isRead])
+  @@index([createdAt])
+}
