@@ -6,8 +6,8 @@
 **Team:** CodeCatalyst  
 **Team Members:** Gagan · Chaitra Mesta
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-111111?style=for-the-badge&logo=vercel)](https://smart-hospital-sigma.vercel.app)
-[![Backend](https://img.shields.io/badge/Backend-Render-5B5B5B?style=for-the-badge)](https://nexuscare-backend-nwd2.onrender.com)
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-111111?style=for-the-badge&logo=vercel)]
+
 
 ---
 
