@@ -126,45 +126,192 @@ export default function Home() {
   }, [ready, user, router]);
 
   async function loadData() {
-    try {
-      setLoading(true);
+  try {
+    setLoading(true);
 
-      const responses = await Promise.all([
-        fetch(`${API}/hospitals`),
-        fetch(`${API}/resources`),
-        fetch(`${API}/requests`),
-        fetch(`${API}/lending`),
-        fetch(`${API}/activity`),
-      ]);
+    const responses = await Promise.all([
+      fetch(`${API}/hospitals`),
+      fetch(`${API}/resources`),
+      fetch(`${API}/requests`),
+      fetch(`${API}/lending`),
+      fetch(`${API}/activity`),
+    ]);
 
-      if (responses.some((response) => !response.ok)) {
-        throw new Error("One or more API requests failed");
-      }
-
-      const [
-        hospitalsData,
-        resourcesData,
-        requestsData,
-        lendingsData,
-        activitiesData,
-      ] = await Promise.all(
-        responses.map((response) => response.json())
-      );
-
-      setHospitals(hospitalsData.data || []);
-      setResources(resourcesData.data || []);
-      setRequests(requestsData.data || []);
-      setLendings(lendingsData.data || []);
-      setActivities(activitiesData.data || []);
-    } catch (error) {
-      console.error(error);
-      setNotice(
-        "Unable to load NexusCare data. Please check that the backend is running."
-      );
-    } finally {
-      setLoading(false);
+    if (responses.some((response) => !response.ok)) {
+      throw new Error("One or more API requests failed");
     }
+
+    const [
+      hospitalsData,
+      resourcesData,
+      requestsData,
+      lendingsData,
+      activitiesData,
+    ] = await Promise.all(
+      responses.map((response) => response.json())
+    );
+
+    const asArray = (value: any): any[] => {
+      if (Array.isArray(value)) return value;
+      if (Array.isArray(value?.data)) return value.data;
+      return [];
+    };
+
+    const rawResources = asArray(resourcesData);
+
+    const normalizedResources = rawResources.map((resource: any) => ({
+      ...resource,
+      available: Number(
+        resource.availableQuantity ??
+          resource.available ??
+          0
+      ),
+      total: Number(
+        resource.totalQuantity ??
+          resource.total ??
+          0
+      ),
+    }));
+
+    const rawHospitals = asArray(hospitalsData);
+
+    const normalizedHospitals = rawHospitals.map(
+      (hospital: any) => {
+        const hospitalResources =
+          normalizedResources.filter(
+            (resource: any) =>
+              resource.hospitalId === hospital.id
+          );
+
+        const bedResources =
+          hospitalResources.filter(
+            (resource: any) =>
+              resource.type === "BED"
+          );
+
+        const bloodResources =
+          hospitalResources.filter(
+            (resource: any) =>
+              resource.type === "BLOOD"
+          );
+
+        const beds = bedResources.reduce(
+          (sum: number, resource: any) =>
+            sum + Number(resource.available ?? 0),
+          0
+        );
+
+        const totalBeds = bedResources.reduce(
+          (sum: number, resource: any) =>
+            sum + Number(resource.total ?? 0),
+          0
+        );
+
+        const bloodUnits = bloodResources.reduce(
+          (sum: number, resource: any) =>
+            sum + Number(resource.available ?? 0),
+          0
+        );
+
+        return {
+          ...hospital,
+          beds:
+            hospital.beds ??
+            beds,
+          totalBeds:
+            hospital.totalBeds ??
+            totalBeds,
+          bloodUnits:
+            hospital.bloodUnits ??
+            bloodUnits,
+          emergencyCapacity:
+            hospital.emergencyCapacity ?? 0,
+        };
+      }
+    );
+
+    const rawRequests = asArray(requestsData);
+
+    const normalizedRequests = rawRequests.map(
+      (request: any) => ({
+        ...request,
+        hospital:
+          request.hospital ??
+          request.destinationHospital ??
+          "",
+        resource:
+          request.resource ??
+          request.resourceName ??
+          (
+            request.resourceType === "BLOOD"
+              ? request.bloodGroup === "O_NEGATIVE"
+                ? "O- Blood"
+                : "Blood"
+              : request.resourceType === "BED"
+              ? "ICU Beds"
+              : request.resourceType === "EQUIPMENT"
+              ? "Ventilators"
+              : request.resourceType ?? ""
+          ),
+        quantity: Number(
+          request.quantity ?? 0
+        ),
+        urgency:
+          request.urgency ?? "MEDIUM",
+        status:
+          request.status ?? "PENDING",
+      })
+    );
+
+    const rawLendings = asArray(lendingsData);
+
+    const normalizedLendings =
+      rawLendings.map((lending: any) => ({
+        ...lending,
+        quantity: Number(
+          lending.quantity ?? 0
+        ),
+      }));
+
+    const rawActivities = asArray(
+      activitiesData
+    );
+
+    const normalizedActivities =
+      rawActivities.map((activity: any) => ({
+        ...activity,
+        message:
+          activity.message ??
+          activity.title ??
+          activity.action ??
+          activity.description ??
+          "",
+        hospital:
+          activity.hospital ?? "",
+        status:
+          activity.status ??
+          activity.action ??
+          "INFO",
+        createdAt:
+          activity.createdAt ??
+          new Date().toISOString(),
+      }));
+
+    setHospitals(normalizedHospitals);
+    setResources(normalizedResources);
+    setRequests(normalizedRequests);
+    setLendings(normalizedLendings);
+    setActivities(normalizedActivities);
+  } catch (error) {
+    console.error(error);
+
+    setNotice(
+      "Unable to load NexusCare data. Please check that the backend is running."
+    );
+  } finally {
+    setLoading(false);
   }
+}
 
   useEffect(() => {
     if (!ready || !user) return;
@@ -1223,46 +1370,86 @@ function SmartMatch() {
     useState(false);
 
   async function findMatch() {
-    try {
-      setLoading(true);
-      setCreated(false);
-      setResult(null);
+  try {
+    setLoading(true);
+    setCreated(false);
+    setResult(null);
 
-      const response = await fetch(
-        `${API}/smart-match`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            resource,
-            quantity: Number(quantity),
-          }),
-        }
+    const resourceType =
+      resource === "O- Blood"
+        ? "BLOOD"
+        : resource === "ICU Beds" ||
+          resource === "General Beds"
+        ? "BED"
+        : "EQUIPMENT";
+
+    const bloodGroup =
+      resource === "O- Blood"
+        ? "O_NEGATIVE"
+        : null;
+
+    const response = await fetch(
+      `${API}/smart-match`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          resourceType,
+          bloodGroup,
+          quantity: Number(quantity),
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok || !data.success) {
+      throw new Error(
+        data.message ||
+          "Smart Match failed"
       );
-
-      const data = await response.json();
-
-      if (!response.ok || !data.success) {
-        throw new Error(
-          data.message || "Smart Match failed"
-        );
-      }
-
-      if (!data.matched) {
-        alert(data.message);
-        return;
-      }
-
-      setResult(data.match);
-    } catch (error) {
-      console.error(error);
-      alert("Smart Match failed.");
-    } finally {
-      setLoading(false);
     }
+
+    const match = data.match ?? data;
+
+    if (!match.hospital) {
+      throw new Error(
+        "No matching hospital found"
+      );
+    }
+
+    setResult({
+      hospital: match.hospital,
+      hospitalId: match.hospitalId,
+      resource:
+        match.resource ?? resource,
+      available: Number(
+        match.available ??
+          match.availableQuantity ??
+          0
+      ),
+      requested: Number(
+        match.requested ??
+          quantity
+      ),
+      surplus: Number(
+        match.surplus ?? 0
+      ),
+      distanceKm:
+        match.distanceKm,
+      hospitalLoad:
+        match.hospitalLoad ??
+        "MEDIUM",
+    });
+  } catch (error) {
+    console.error(error);
+    alert("Smart Match failed.");
+  } finally {
+    setLoading(false);
   }
+}
 
   async function requestLending() {
     if (!result?.hospital) return;
