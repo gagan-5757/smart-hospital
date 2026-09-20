@@ -12,8 +12,8 @@ import {
 import { io, Socket } from "socket.io-client";
 import { useAuth } from "@/context/AuthContext";
 
-const API = "http://localhost:5000/api";
-const SOCKET_URL = "http://localhost:5000";
+const API = "https://nexuscare-backend-nwd2.onrender.com/api";
+const SOCKET_URL = "https://nexuscare-backend-nwd2.onrender.com";
 
 type Severity =
   | "INFO"

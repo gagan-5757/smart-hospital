@@ -6,12 +6,13 @@ const { Server } = require("socket.io");
 const app = express();
 const server = http.createServer(app);
 
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
-const allowedOrigins = [
+origin: [
   "http://localhost:3000",
   "http://127.0.0.1:3000",
-];
+  "https://smart-hospital-sigma.vercel.app"
+]
 
 app.use(
   cors({
@@ -2658,34 +2659,16 @@ io.on(
    START
 ========================================================= */
 
-server.listen(
-  PORT,
-  () => {
-    console.log("");
-    console.log(
-      "=========================================="
-    );
-    console.log(
-      "       NEXUSCARE BACKEND RUNNING"
-    );
-    console.log(
-      "=========================================="
-    );
-    console.log(
-      `API: http://localhost:${PORT}/api`
-    );
-    console.log(
-      `Health: http://localhost:${PORT}/api/health`
-    );
-    console.log(
-      `Notifications: http://localhost:${PORT}/api/notifications`
-    );
-    console.log(
-      "Socket.io: ENABLED"
-    );
-    console.log(
-      "=========================================="
-    );
-    console.log("");
-  }
-);
+
+
+server.listen(PORT, "0.0.0.0", () => {
+  console.log("");
+  console.log("==========================================");
+  console.log(`NexusCare backend running on port ${PORT}`);
+  console.log(`API: http://localhost:${PORT}/api`);
+  console.log(`Health: http://localhost:${PORT}/api/health`);
+  console.log(`Notifications: http://localhost:${PORT}/api/notifications`);
+  console.log("Socket.io: ENABLED");
+  console.log("==========================================");
+  console.log("");
+});

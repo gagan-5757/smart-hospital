@@ -25,8 +25,8 @@ import {
   XCircle,
 } from "lucide-react";
 
-const API = "http://localhost:5000/api";
-const SOCKET_URL = "http://localhost:5000";
+const API = "https://nexuscare-backend-nwd2.onrender.com/api";
+const SOCKET_URL = "https://nexuscare-backend-nwd2.onrender.com";
 type Tab =
   | "dashboard"
   | "resources"
