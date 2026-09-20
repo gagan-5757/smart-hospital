@@ -1,43 +1,50 @@
 # 🏥 NexusCare — Smart Hospital Resource Coordination
 
-> A real-time hospital operations platform for coordinating critical healthcare resources across a connected hospital network.
+> A real-time hospital resource coordination platform designed to help hospitals monitor critical resources, raise emergency requests, identify suitable hospitals, and coordinate inter-hospital resource sharing through a unified operational workspace.
 
 **Hackathon:** Versathon 2.0  
 **Team:** CodeCatalyst  
 **Team Members:** Gagan · Chaitra Mesta
 
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel-111111?style=for-the-badge&logo=vercel)]
-
+[![Live Demo](https://img.shields.io/badge/LIVE%20DEMO-OPEN%20PROJECT-111111?style=for-the-badge)](https://smart-hospital-sigma.vercel.app)
 
 ---
 
 ## 🚨 Problem Statement
 
-During emergencies, one hospital may face a critical shortage while another hospital in the network has the required resource available.
+During emergencies, hospitals may face shortages of critical resources such as ICU beds, blood units, or medical equipment while another nearby hospital may have those resources available.
 
-Traditional coordination can be slow and fragmented, making it difficult to identify available resources, contact suitable hospitals, and track transfers.
+The main challenge is the lack of a unified system for:
 
-NexusCare provides a unified operational workspace for monitoring hospital resources and coordinating emergency resource sharing across a connected network.
+- Monitoring resource availability across hospitals
+- Raising emergency resource requests
+- Finding hospitals with matching resources
+- Coordinating resource transfers
+- Tracking request progress
+- Maintaining operational visibility and audit history
+- Receiving real-time updates during critical events
 
 ---
 
-## 💡 Solution
+## 💡 Our Solution
 
-NexusCare connects hospital resource visibility with an actionable emergency coordination workflow:
+**NexusCare** provides a centralized hospital coordination platform that connects multiple hospitals into a shared operational network.
+
+The system transforms emergency coordination into a structured workflow:
 
 ```text
-Shortage
-   ↓
+Resource Shortage
+       ↓
 Emergency Request
-   ↓
+       ↓
 Smart Match
-   ↓
+       ↓
 Resource Lending
-   ↓
-Accept
-   ↓
-Receive
-   ↓
-Fulfill
-   ↓
+       ↓
+Accept Transfer
+       ↓
+Resource Received
+       ↓
+Request Fulfilled
+       ↓
 History + Audit + Notifications
