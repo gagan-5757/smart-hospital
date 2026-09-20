@@ -1887,8 +1887,8 @@ app.put(
       "ACCEPTED";
 
     transaction.acceptedBy =
-      req.body.acceptedBy ||
-      "Hospital Coordinator";
+  req.body.acceptedBy ||
+  "Hospital Coordinator";
 
     transaction.updatedAt =
       new Date().toISOString();
@@ -2011,9 +2011,9 @@ app.put(
     transaction.status =
       "COMPLETED";
 
-    transaction.completedBy =
-      req.body.completedBy ||
-      "Hospital Coordinator";
+   transaction.completedBy =
+  req.body?.completedBy ||
+  "Hospital Coordinator";
 
     transaction.updatedAt =
       new Date().toISOString();
